@@ -1,4 +1,4 @@
-#include "utf8.hpp"
+#include "idutf8lib.hpp"
 #include <iostream>
 #include <bitset>
 #include <exception>
@@ -53,9 +53,15 @@ Utf8String::Utf8String(const std::string &string) {
 	
 	for ( auto &&chr : string ) {
 		std::bitset<2> start_bits = (chr >> 6);
-
-		//ASCII character can just be pushed in
+		
 		if ( start_bits[1] == 0 ) {
+
+			//ASCII character is pushed after making sure of the character before
+			if ( !utf8_char.empty() ) {
+				content.push_back(utf8_char);
+				utf8_char.clear();
+			}
+			
 			content.push_back(std::vector<uint8_t>(1, chr));
 			continue;
 			

@@ -1,6 +1,6 @@
 #define CATCH_CONFIG_MAIN
 #include "catch/catch.hpp"
-#include "../lib/utf8.hpp"
+#include "../lib/idutf8lib.hpp"
 
 TEST_CASE("Initialization is correct") {
 	Utf8String empty_utf8str;
@@ -11,6 +11,11 @@ TEST_CASE("Initialization is correct") {
 }
 
 TEST_CASE("Public Interface", "[interface]") {
+	SECTION("Operators") {
+		Utf8String test_str;
+		test_str = "ĥéĺĺõ ẃòŕĺd";
+		REQUIRE(test_str.to_string() == "ĥéĺĺõ ẃòŕĺd");
+	}
 	SECTION("to string") {
 		Utf8String test_str("hello");
 		REQUIRE(test_str.to_string() == "hello");
