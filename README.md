@@ -6,7 +6,7 @@ A very (too much really) simple Utf8 library for C++
 ```cpp
 #include "lib/idutf8lib.hpp"
 
-Utf8String text(); //Empty UTF8 object
+Utf8String text; //Empty UTF8 object
 Utf8String utf8_text("Héĺĺò Ẃórld"); //std::string compatible constructor
 text = "Jello!"; //Supports assignment with std::string AND Utf8String objects
 text.to_string(); // == std::string("Jello!")
