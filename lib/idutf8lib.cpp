@@ -39,10 +39,7 @@ bool Utf8String::is_valid_utf8_string(const std::string &string) {
 }
 
 
-//* Constructors and Destructor *
-
-Utf8String::Utf8String() noexcept { content.clear(); }
-
+//* String Constructor *
 
 Utf8String::Utf8String(const std::string &string) {
 	std::vector<uint8_t> utf8_char;
@@ -51,7 +48,7 @@ Utf8String::Utf8String(const std::string &string) {
 		throw(std::runtime_error("Invalid UTF8 String in constructor")); 
 	}
 	
-	for ( auto &&chr : string ) {
+	for ( const auto &chr : string ) {
 		std::bitset<2> start_bits = (chr >> 6);
 		
 		if ( start_bits[1] == 0 ) {
@@ -85,20 +82,12 @@ Utf8String::Utf8String(const std::string &string) {
 }
 
 
-Utf8String::Utf8String(const Utf8String &utf8_structure) noexcept {
-	content = utf8_structure.content;
-}
-
-
-Utf8String::~Utf8String() { content.clear(); }
-
-
 //* Public Interface *
 
 std::string Utf8String::to_string() const {
 	std::string temp;
 
-	for ( auto &&chr : content ) {
+	for ( const auto &chr : content ) {
 		temp += std::string(chr.begin(), chr.end());
 	}
 
@@ -112,7 +101,7 @@ std::size_t Utf8String::size_in_chars() const { return content.size(); }
 std::size_t Utf8String::size_in_bytes() const {
 	std::size_t size = 0;
 
-	for ( auto &&chr : content ) {
+	for ( const auto &chr : content ) {
 		size += chr.size();
 	}
 

@@ -15,10 +15,10 @@ private:
 	bool is_valid_utf8_string(const std::string &string);
 
 public:
-	Utf8String() noexcept;
-	Utf8String(const Utf8String &utf8_structure) noexcept;
+	Utf8String() = default;
+	Utf8String(const Utf8String &) = default;
 	Utf8String(const std::string &string);
-	~Utf8String();
+	~Utf8String() = default;
 	
 	std::string to_string() const;
 	std::size_t size_in_chars() const;

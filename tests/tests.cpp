@@ -6,8 +6,11 @@ TEST_CASE("Initialization is correct") {
 	Utf8String empty_utf8str;
 	REQUIRE(empty_utf8str.to_string().empty() == true);
 
-	Utf8String string_to_utf8str("Hello World");
-	REQUIRE(string_to_utf8str.to_string() == "Hello World");
+	Utf8String utf8str("Hello World");
+	REQUIRE(utf8str.to_string() == "Hello World");
+
+	Utf8String yet_another_test_str(utf8str);
+	REQUIRE(yet_another_test_str.to_string() == "Hello World");
 }
 
 TEST_CASE("Public Interface", "[interface]") {
