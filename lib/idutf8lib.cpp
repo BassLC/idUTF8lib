@@ -5,31 +5,31 @@
 
 //* Private functions *
 
-bool Utf8String::is_valid_utf8_string(const std::string &string) {
-
+bool Utf8String::is_valid_utf8_string(const std::string &string) const {
 	for ( std::size_t pos = 0; pos < string.size(); ++pos ) {
-
+		
 		//IMPORTANT: The way you access a bitset object is completely backwards.
-		//EXAMPLE: bitset = 0b10; bitset[0] == 0
-		std::bitset<4> bits = (string[pos] >> 4);
+ 		//EXAMPLE: bitset = 0b10; bitset[0] == 0
+		std::bitset<4> bits = string[pos] >> 4;
 
 		//ASCII character
-		if ( bits[4] == 0 ) { 
+		if ( bits[3] == 0 ) {
 			continue;
 			
 		//Continuation character - should NOT be here
-		} else if ( bits[4] == 1 && bits[3] == 0 ) { 
+		} else if ( bits[3] == 1 && bits[2] == 0 ){
 			return false;
 
 		} else {
+			
 			//Check number of characters
-			while ( (bits <<= 1)[4] ) {
-				if ( ++pos > (string.size() - 1) ) {
+			while ( (bits <<= 1)[3] ) {
+				if ( ++pos >= string.size() ) {
 					return false;
 				}
 
-				if ( (string[pos] >> 6) != 0b10 ) {
-					return false; 
+				if ( std::bitset<2>(string[pos] >> 6) != 0b10 ) {
+					return false;
 				}
 			}
 		}

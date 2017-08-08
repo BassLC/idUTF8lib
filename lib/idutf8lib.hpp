@@ -12,7 +12,7 @@ private:
 	
 	Utf8Struct content;
 
-	bool is_valid_utf8_string(const std::string &string);
+	bool is_valid_utf8_string(const std::string &string) const;
 
 public:
 	Utf8String() = default;
