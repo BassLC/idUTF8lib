@@ -39,7 +39,7 @@ bool Utf8String::is_valid_utf8_string(const std::string &string) const {
 }
 
 
-//* String Constructor *
+//* Constructors *
 
 Utf8String::Utf8String(const std::string &string) {
 	std::vector<uint8_t> utf8_char;
@@ -82,6 +82,10 @@ Utf8String::Utf8String(const std::string &string) {
 }
 
 
+Utf8String::Utf8String(Utf8Struct &&temp) {
+	content = std::move(temp);
+}
+
 //* Public Interface *
 
 std::string Utf8String::to_string() const {
@@ -112,11 +116,35 @@ std::size_t Utf8String::size_in_bytes() const {
 void Utf8String::clear() { content.clear(); }
 
 
+Utf8String Utf8String::sub_utf8str(const std::size_t &initial_pos, const std::size_t &distance) const {
+
+	const std::size_t end_pos = (distance == std::string::npos) ? content.size() : (initial_pos + distance);
+
+	// To be sure we don't try to overflow
+	if ( initial_pos >= content.size() || end_pos > content.size() ){
+		throw std::out_of_range("Too big substr access");
+	}
+
+
+	return Utf8String(Utf8Struct(content.begin()+initial_pos, content.begin()+end_pos));
+}
+
+
+//* Operators *
+
 void Utf8String::operator=(const std::string &string) {
 	Utf8String temp(string);
-
 	content = temp.content;
 }
 
 
 void Utf8String::operator=(const Utf8String &utf8_object) noexcept { content = utf8_object.content; }
+
+
+std::string Utf8String::operator[](const std::size_t &pos) const {
+	if ( pos >= content.size() ) {
+		throw std::out_of_range("Bad UTF-8 range access with []");
+	}
+
+	return std::string(content[pos].begin(), content[pos].end());
+}

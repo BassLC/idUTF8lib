@@ -15,9 +15,23 @@ TEST_CASE("Initialization is correct") {
 
 TEST_CASE("Public Interface", "[interface]") {
 	SECTION("Operators") {
+
 		Utf8String test_str;
 		test_str = "ĥéĺĺõ ẃòŕĺd";
-		REQUIRE(test_str.to_string() == "ĥéĺĺõ ẃòŕĺd");
+
+		SECTION("=") {
+			REQUIRE(test_str.to_string() == "ĥéĺĺõ ẃòŕĺd");
+		}
+
+		SECTION("[]") {
+			REQUIRE( (test_str[0] == "ĥ" && test_str[test_str.size_in_chars() - 1] == "d") );
+
+			bool flag1 = false;
+			bool flag2 = false;
+			try { test_str[-1]; } catch (std::out_of_range) { flag1 = true; }
+			try { test_str[test_str.size_in_chars()]; } catch (std::out_of_range) { flag2 = true; }
+			REQUIRE( (flag1 && flag2) );
+		}
 	}
 	SECTION("to string") {
 		Utf8String test_str("hello");
@@ -36,6 +50,21 @@ TEST_CASE("Public Interface", "[interface]") {
 
 		test_str = "Not utf8 please";
 		REQUIRE(test_str.size_in_bytes() == 15);
+	}
+
+	SECTION("sub utf8str") {
+		Utf8String test_string("ççppçç");
+
+		REQUIRE(test_string.sub_utf8str(0,3).to_string() == "ççp");
+		REQUIRE(test_string.sub_utf8str(3).to_string() == "pçç");
+
+		bool flag1 = false;
+		bool flag2 = false;
+
+		try { test_string.sub_utf8str(test_string.size_in_chars()); } catch (std::out_of_range) { flag1 = true;}
+		try { test_string.sub_utf8str(0, 7);} catch (std::out_of_range) { flag2 = true; }
+
+		REQUIRE( (flag1 && flag2 ));
 	}
 		
 }
