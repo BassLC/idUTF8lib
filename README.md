@@ -11,13 +11,17 @@ Utf8String utf8_text("Héĺĺò Ẃórld"); //std::string compatible constructor
 text = "Jello!"; //Supports assignment with std::string AND Utf8String objects
 text.to_string(); // == std::string("Jello!")
 
-utf8_text.size_in_chars() // == 11
-utf8_text.size_in_bytes() // == 18 
+utf8_text.size_in_chars(); // == 11
+utf8_text.size_in_bytes(); // == 18 
+
+utf8_text[0]; // == std::string("H")
+utf8_text.sub_utf8str(1,3); // == Utf8String("éĺĺ")
+
 ```
 
 ## Features
 * Decodes and parses UTF-8 strings correctly (at least until now)
-* Very lightweight and small: only 165 newlines total (*without counting tests)
+* Very lightweight and small: less than 200 newlines total (*without counting tests)
 
 
 ## Requirements
