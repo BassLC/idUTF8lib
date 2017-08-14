@@ -4,13 +4,13 @@
 
 TEST_CASE("Initialization is correct") {
 	Utf8String empty_utf8str;
-	REQUIRE(empty_utf8str.to_string().empty() == true);
+	REQUIRE(empty_utf8str == "");
 
 	Utf8String utf8str("Hello World");
-	REQUIRE(utf8str.to_string() == "Hello World");
+	REQUIRE(utf8str == "Hello World");
 
 	Utf8String yet_another_test_str(utf8str);
-	REQUIRE(yet_another_test_str.to_string() == "Hello World");
+	REQUIRE(yet_another_test_str == "Hello World");
 }
 
 TEST_CASE("Public Interface", "[interface]") {
@@ -18,10 +18,6 @@ TEST_CASE("Public Interface", "[interface]") {
 
 		Utf8String test_str;
 		test_str = "ĥéĺĺõ ẃòŕĺd";
-
-		SECTION("=") {
-			REQUIRE(test_str.to_string() == "ĥéĺĺõ ẃòŕĺd");
-		}
 
 		SECTION("[]") {
 			REQUIRE( (test_str[0] == "ĥ" && test_str[test_str.size_in_chars() - 1] == "d") );
@@ -32,16 +28,30 @@ TEST_CASE("Public Interface", "[interface]") {
 			try { test_str[test_str.size_in_chars()]; } catch (std::out_of_range) { flag2 = true; }
 			REQUIRE( (flag1 && flag2) );
 		}
+
+		SECTION("+") {
+			Utf8String other_test_str("sup");
+			REQUIRE( (test_str + other_test_str) == "ĥéĺĺõ ẃòŕĺdsup");
+
+		}
+
+		SECTION("<<") { 
+			std::stringstream os;
+			os << test_str;
+
+			REQUIRE( test_str == os.str() );
+		}
 	}
+	
 	SECTION("to string") {
 		Utf8String test_str("hello");
-		REQUIRE(test_str.to_string() == "hello");
+		REQUIRE(test_str == "hello");
 	}
 		
 	SECTION("clear") {
 		Utf8String test_str("Important API key");
 		test_str.clear();
-		REQUIRE(test_str.to_string().empty());
+		REQUIRE(test_str == "");
 	}
 
 	SECTION("size in {chars, bytes}") {
@@ -55,8 +65,8 @@ TEST_CASE("Public Interface", "[interface]") {
 	SECTION("sub utf8str") {
 		Utf8String test_string("ççppçç");
 
-		REQUIRE(test_string.sub_utf8str(0,3).to_string() == "ççp");
-		REQUIRE(test_string.sub_utf8str(3).to_string() == "pçç");
+		REQUIRE(test_string.sub_utf8str(0,3) == "ççp");
+		REQUIRE(test_string.sub_utf8str(3) == "pçç");
 
 		bool flag1 = false;
 		bool flag2 = false;
@@ -66,5 +76,4 @@ TEST_CASE("Public Interface", "[interface]") {
 
 		REQUIRE( (flag1 && flag2 ));
 	}
-		
 }

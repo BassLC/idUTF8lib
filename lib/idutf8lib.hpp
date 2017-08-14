@@ -29,7 +29,16 @@ public:
 
 	void operator=(const std::string &string);
 	void operator=(const Utf8String &utf8_structure) noexcept;
+	
+	Utf8String operator+(const Utf8String &utf8_structure) const noexcept;
+	void operator+=(const Utf8String &utf8_structure) noexcept;
+	
 	std::string operator[](const std::size_t &pos) const;
+
+	friend std::ostream& operator<<(std::ostream &out, const Utf8String &utf8_structure) noexcept;
+
+	bool operator==(const Utf8String &utf8_structure) const noexcept;
+	bool operator==(const std::string &string) const noexcept;
 };
 
 #endif

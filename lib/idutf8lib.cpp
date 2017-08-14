@@ -83,8 +83,9 @@ Utf8String::Utf8String(const std::string &string) {
 
 
 Utf8String::Utf8String(Utf8Struct &&temp) {
-	content = std::move(temp);
+	content = temp;
 }
+
 
 //* Public Interface *
 
@@ -148,3 +149,32 @@ std::string Utf8String::operator[](const std::size_t &pos) const {
 
 	return std::string(content[pos].begin(), content[pos].end());
 }
+
+
+Utf8String Utf8String::operator+(const Utf8String &utf8_structure) const noexcept {
+	Utf8Struct temp = content;
+	temp.insert(std::end(temp), std::begin(utf8_structure.content), std::end(utf8_structure.content));
+	return Utf8String(std::move(temp));
+}
+
+
+void Utf8String::operator+=(const Utf8String &utf8_structure) noexcept {
+	content.insert(std::end(content), std::begin(utf8_structure.content), std::end(utf8_structure.content));
+}
+
+
+std::ostream& operator<<(std::ostream &out, const Utf8String &utf8_structure) noexcept{
+	out << utf8_structure.to_string();
+	return out;
+}
+
+
+bool Utf8String::operator==(const Utf8String &utf8_structure) const noexcept {
+	return (content == utf8_structure.content);
+}
+
+
+bool Utf8String::operator==(const std::string &string) const noexcept {
+	return (this->to_string() == string);
+}
+
