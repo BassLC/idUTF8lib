@@ -3,5 +3,8 @@ WARNINGS=-Wall -Werror -Wpedantic
 FILES=lib/*.cpp
 CATCH=tests/catch/catch.hpp
 
-tests:
-	$(CC) $(FILES) $(CATCH) tests/tests.cpp
+tests: $(FILES)
+	$(CC) $(FILES) $(CATCH) tests/tests.cpp 
+
+clean:
+	rm a.out
