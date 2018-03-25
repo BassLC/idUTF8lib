@@ -8,9 +8,9 @@
 class Utf8String {
 
 private:
-	using Utf8Struct = std::vector<std::vector<uint8_t>>;
+	using Utf8Struct = std::vector<std::string>;
 	
-	Utf8Struct content;
+	Utf8Struct m_content;
 
 	bool is_valid_utf8_string(const std::string &string) const;
 

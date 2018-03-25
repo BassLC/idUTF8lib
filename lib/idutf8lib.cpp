@@ -42,7 +42,7 @@ bool Utf8String::is_valid_utf8_string(const std::string &string) const {
 //* Constructors *
 
 Utf8String::Utf8String(const std::string &string) {
-	std::vector<uint8_t> utf8_char;
+	std::string utf8_char;
  
 	if ( !is_valid_utf8_string(string) ) {
 		throw(std::runtime_error("Invalid UTF8 String in constructor")); 
@@ -53,13 +53,14 @@ Utf8String::Utf8String(const std::string &string) {
 		
 		if ( start_bits[1] == 0 ) {
 
-			//ASCII character is pushed after making sure of the character before
+			//If there is an ASCII character, this means the previous UTF8 char is over and can be pushed
 			if ( !utf8_char.empty() ) {
-				content.push_back(utf8_char);
+				m_content.push_back(utf8_char);
 				utf8_char.clear();
 			}
 			
-			content.push_back(std::vector<uint8_t>(1, chr));
+			//Pushing an ASCII Character (The std::string constructor needs the size)
+			m_content.push_back(std::string(1,chr));
 			continue;
 			
 		//If there's more than one byte	
@@ -67,7 +68,7 @@ Utf8String::Utf8String(const std::string &string) {
 
 			//Check to see if it has to flush the last character
 			if ( !utf8_char.empty() ) {
-				content.push_back(utf8_char);
+				m_content.push_back(utf8_char);
 				utf8_char.clear();
 			}
 		}
@@ -77,13 +78,13 @@ Utf8String::Utf8String(const std::string &string) {
 
 	//If last character is non-ASCII
 	if ( !utf8_char.empty() ) {
-		content.push_back(utf8_char);
+		m_content.push_back(utf8_char);
 	}
 }
 
 
 Utf8String::Utf8String(Utf8Struct &&temp) {
-	content = temp;
+	m_content = temp;
 }
 
 
@@ -92,7 +93,7 @@ Utf8String::Utf8String(Utf8Struct &&temp) {
 std::string Utf8String::to_string() const {
 	std::string temp;
 
-	for ( const auto &chr : content ) {
+	for ( const auto &chr : m_content ) {
 		temp += std::string(chr.begin(), chr.end());
 	}
 
@@ -100,13 +101,13 @@ std::string Utf8String::to_string() const {
 }
 
 
-std::size_t Utf8String::size_in_chars() const { return content.size(); }
+std::size_t Utf8String::size_in_chars() const { return m_content.size(); }
 
 
 std::size_t Utf8String::size_in_bytes() const {
 	std::size_t size = 0;
 
-	for ( const auto &chr : content ) {
+	for ( const auto &chr : m_content ) {
 		size += chr.size();
 	}
 
@@ -114,20 +115,20 @@ std::size_t Utf8String::size_in_bytes() const {
 }
 
 
-void Utf8String::clear() { content.clear(); }
+void Utf8String::clear() { m_content.clear(); }
 
 
 Utf8String Utf8String::sub_utf8str(const std::size_t &initial_pos, const std::size_t &distance) const {
 
-	const std::size_t end_pos = (distance == std::string::npos) ? content.size() : (initial_pos + distance);
+	const std::size_t end_pos = (distance == std::string::npos) ? m_content.size() : (initial_pos + distance);
 
 	// To be sure we don't try to overflow
-	if ( initial_pos >= content.size() || end_pos > content.size() ){
+	if ( initial_pos >= m_content.size() || end_pos > m_content.size() ){
 		throw std::out_of_range("Too big substr access");
 	}
 
 
-	return Utf8String(Utf8Struct(content.begin()+initial_pos, content.begin()+end_pos));
+	return Utf8String(Utf8Struct(m_content.begin()+initial_pos, m_content.begin()+end_pos));
 }
 
 
@@ -135,31 +136,31 @@ Utf8String Utf8String::sub_utf8str(const std::size_t &initial_pos, const std::si
 
 void Utf8String::operator=(const std::string &string) {
 	Utf8String temp(string);
-	content = temp.content;
+	m_content = temp.m_content;
 }
 
 
-void Utf8String::operator=(const Utf8String &utf8_object) noexcept { content = utf8_object.content; }
+void Utf8String::operator=(const Utf8String &utf8_object) noexcept { m_content = utf8_object.m_content; }
 
 
 std::string Utf8String::operator[](const std::size_t &pos) const {
-	if ( pos >= content.size() ) {
+	if ( pos >= m_content.size() ) {
 		throw std::out_of_range("Bad UTF-8 range access with []");
 	}
 
-	return std::string(content[pos].begin(), content[pos].end());
+	return std::string(m_content[pos].begin(), m_content[pos].end());
 }
 
 
 Utf8String Utf8String::operator+(const Utf8String &utf8_structure) const noexcept {
-	Utf8Struct temp = content;
-	temp.insert(std::end(temp), std::begin(utf8_structure.content), std::end(utf8_structure.content));
+	Utf8Struct temp = m_content;
+	temp.insert(std::end(temp), std::begin(utf8_structure.m_content), std::end(utf8_structure.m_content));
 	return Utf8String(std::move(temp));
 }
 
 
 void Utf8String::operator+=(const Utf8String &utf8_structure) noexcept {
-	content.insert(std::end(content), std::begin(utf8_structure.content), std::end(utf8_structure.content));
+	m_content.insert(std::end(m_content), std::begin(utf8_structure.m_content), std::end(utf8_structure.m_content));
 }
 
 
@@ -170,7 +171,7 @@ std::ostream& operator<<(std::ostream &out, const Utf8String &utf8_structure) no
 
 
 bool Utf8String::operator==(const Utf8String &utf8_structure) const noexcept {
-	return (content == utf8_structure.content);
+	return (m_content == utf8_structure.m_content);
 }
 
 
