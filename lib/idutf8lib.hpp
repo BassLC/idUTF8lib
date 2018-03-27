@@ -13,6 +13,7 @@ private:
 	Utf8Struct m_content;
 
 	bool is_valid_utf8_string(const std::string &string) const;
+	std::string remove_initial_BOM_char(const std::string &string) const;
 
 public:
 	Utf8String() = default;

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <bitset>
 #include <exception>
+#include <array>
 
 //* Private functions *
 
@@ -39,16 +40,34 @@ bool Utf8String::is_valid_utf8_string(const std::string &string) const {
 }
 
 
+std::string Utf8String::remove_initial_BOM_char(const std::string &string) const {
+	const std::array<uint8_t, 3> BOM_CHARS {0xEF, 0xBB, 0xBF};
+	std::string without_BOMS;
+	
+	for ( int i = 0; i < 3; ++i ) {
+		if ( !(static_cast<uint8_t>(string[i]) == BOM_CHARS[i]) ) {
+			without_BOMS = string;
+			break;
+
+		} else {
+			without_BOMS = string.substr(3, std::string::npos);
+		}
+	}
+
+	return without_BOMS;
+}
+
 //* Constructors *
 
 Utf8String::Utf8String(const std::string &string) {
-	std::string utf8_char;
- 
+	const std::string to_parse = Utf8String::remove_initial_BOM_char(string);
+
 	if ( !is_valid_utf8_string(string) ) {
 		throw(std::runtime_error("Invalid UTF8 String in constructor")); 
 	}
 	
-	for ( const auto &chr : string ) {
+	std::string utf8_char;
+	for ( const auto &chr : to_parse ) {
 		std::bitset<2> start_bits = (chr >> 6);
 		
 		if ( start_bits[1] == 0 ) {
