@@ -76,4 +76,12 @@ TEST_CASE("Public Interface", "[interface]") {
 
 		REQUIRE( (flag1 && flag2 ));
 	}
+
+	SECTION("assign") {
+		std::string test = "sahkfhjhfkhjfhkajshfdk";
+		Utf8String hello("hello!ª");
+		hello.assign(test);
+
+		REQUIRE(hello == test);
+	}
 }
