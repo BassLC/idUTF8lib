@@ -6,7 +6,7 @@
 
 //* Private functions *
 
-bool Utf8String::is_valid_utf8_string(const std::string &string) const {
+bool Utf8String::is_valid_utf8_string(const std::string& string) const {
 	for ( std::size_t pos = 0; pos < string.size(); ++pos ) {
 		
 		//IMPORTANT: The way you access a bitset object is completely backwards.
@@ -40,7 +40,7 @@ bool Utf8String::is_valid_utf8_string(const std::string &string) const {
 }
 
 
-std::string Utf8String::remove_initial_BOM_char(const std::string &string) const {
+std::string Utf8String::remove_initial_BOM_char(const std::string& string) const {
 	const std::array<uint8_t, 3> BOM_CHARS {0xEF, 0xBB, 0xBF};
 	std::string without_BOMS;
 	
@@ -59,7 +59,7 @@ std::string Utf8String::remove_initial_BOM_char(const std::string &string) const
 
 //* Constructors *
 
-Utf8String::Utf8String(const std::string &string) {
+Utf8String::Utf8String(const std::string& string) {
 	const std::string to_parse = Utf8String::remove_initial_BOM_char(string);
 
 	if ( !is_valid_utf8_string(string) ) {
@@ -67,7 +67,7 @@ Utf8String::Utf8String(const std::string &string) {
 	}
 	
 	std::string utf8_char;
-	for ( const auto &chr : to_parse ) {
+	for ( const auto& chr : to_parse ) {
 		std::bitset<2> start_bits = (chr >> 6);
 		
 		if ( start_bits[1] == 0 ) {
@@ -102,7 +102,7 @@ Utf8String::Utf8String(const std::string &string) {
 }
 
 
-Utf8String::Utf8String(Utf8Struct &&temp) {
+Utf8String::Utf8String(Utf8Struct&& temp) {
 	m_content = temp;
 }
 
@@ -112,7 +112,7 @@ Utf8String::Utf8String(Utf8Struct &&temp) {
 std::string Utf8String::to_string() const {
 	std::string temp;
 
-	for ( const auto &chr : m_content ) {
+	for ( const auto& chr : m_content ) {
 		temp += std::string(chr.begin(), chr.end());
 	}
 
@@ -126,7 +126,7 @@ std::size_t Utf8String::size_in_chars() const { return m_content.size(); }
 std::size_t Utf8String::size_in_bytes() const {
 	std::size_t size = 0;
 
-	for ( const auto &chr : m_content ) {
+	for ( const auto& chr : m_content ) {
 		size += chr.size();
 	}
 
@@ -137,7 +137,7 @@ std::size_t Utf8String::size_in_bytes() const {
 void Utf8String::clear() { m_content.clear(); }
 
 
-Utf8String Utf8String::sub_utf8str(const std::size_t &initial_pos, const std::size_t &distance) const {
+Utf8String Utf8String::sub_utf8str(const std::size_t& initial_pos, const std::size_t& distance) const {
 
 	const std::size_t end_pos = (distance == std::string::npos) ? m_content.size() : (initial_pos + distance);
 
@@ -147,22 +147,31 @@ Utf8String Utf8String::sub_utf8str(const std::size_t &initial_pos, const std::si
 	}
 
 
-	return Utf8String(Utf8Struct(m_content.begin()+initial_pos, m_content.begin()+end_pos));
+	return Utf8String(Utf8Struct(m_content.begin()+initial_pos,
+				     m_content.begin()+end_pos));
 }
 
 
+void Utf8String::reserve(const std::size_t& size) {
+	m_content.reserve(size);
+}
+
+void Utf8String::assign(const std::string& string) {
+	m_content = Utf8String(string).m_content;
+}
+
 //* Operators *
 
-void Utf8String::operator=(const std::string &string) {
+void Utf8String::operator=(const std::string& string) {
 	Utf8String temp(string);
 	m_content = temp.m_content;
 }
 
 
-void Utf8String::operator=(const Utf8String &utf8_object) noexcept { m_content = utf8_object.m_content; }
+void Utf8String::operator=(const Utf8String& utf8_object) noexcept { m_content = utf8_object.m_content; }
 
 
-std::string Utf8String::operator[](const std::size_t &pos) const {
+std::string Utf8String::operator[](const std::size_t& pos) const {
 	if ( pos >= m_content.size() ) {
 		throw std::out_of_range("Bad UTF-8 range access with []");
 	}
@@ -171,30 +180,31 @@ std::string Utf8String::operator[](const std::size_t &pos) const {
 }
 
 
-Utf8String Utf8String::operator+(const Utf8String &utf8_structure) const noexcept {
+Utf8String Utf8String::operator+(const Utf8String& utf8_structure) const noexcept {
 	Utf8Struct temp = m_content;
 	temp.insert(std::end(temp), std::begin(utf8_structure.m_content), std::end(utf8_structure.m_content));
 	return Utf8String(std::move(temp));
 }
 
 
-void Utf8String::operator+=(const Utf8String &utf8_structure) noexcept {
+void Utf8String::operator+=(const Utf8String& utf8_structure) noexcept {
 	m_content.insert(std::end(m_content), std::begin(utf8_structure.m_content), std::end(utf8_structure.m_content));
 }
 
 
-std::ostream& operator<<(std::ostream &out, const Utf8String &utf8_structure) noexcept{
+std::ostream& operator<<(std::ostream& out, const Utf8String& utf8_structure) noexcept{
 	out << utf8_structure.to_string();
 	return out;
 }
 
 
-bool Utf8String::operator==(const Utf8String &utf8_structure) const noexcept {
+bool Utf8String::operator==(const Utf8String& utf8_structure) const noexcept {
 	return (m_content == utf8_structure.m_content);
 }
 
 
-bool Utf8String::operator==(const std::string &string) const noexcept {
+bool Utf8String::operator==(const std::string& string) const noexcept {
 	return (this->to_string() == string);
 }
+
 
